@@ -404,6 +404,8 @@ pub struct Config {
 
     /// I2C SCL timeout period.
     timeout: BusTimeout,
+
+    ack_check_en: bool,
 }
 
 impl Default for Config {
@@ -411,6 +413,7 @@ impl Default for Config {
         Config {
             frequency: Rate::from_khz(100),
             timeout: BusTimeout::BusCycles(10),
+            ack_check_en: true,
         }
     }
 }
@@ -855,6 +858,7 @@ where
         Driver {
             info: self.i2c.info(),
             state: self.i2c.state(),
+            ack_check_en: self.config.ack_check_en,
         }
     }
 
@@ -1375,6 +1379,7 @@ unsafe impl Sync for Info {}
 struct Driver<'a> {
     info: &'a Info,
     state: &'a State,
+    ack_check_en: bool,
 }
 
 impl Driver<'_> {
@@ -1717,7 +1722,7 @@ impl Driver<'_> {
                             cmd_iterator,
                             Command::Write {
                                 ack_exp: Ack::Ack,
-                                ack_check_en: true,
+                                ack_check_en: self.ack_check_en,
                                 length: write_len as u8,
                             },
                         )?;
@@ -1726,7 +1731,7 @@ impl Driver<'_> {
                             cmd_iterator,
                             Command::Write {
                                 ack_exp: Ack::Ack,
-                                ack_check_en: true,
+                                ack_check_en: self.ack_check_en,
                                 length: (write_len as u8) - 1,
                             },
                         )?;
@@ -1734,7 +1739,7 @@ impl Driver<'_> {
                             cmd_iterator,
                             Command::Write {
                                 ack_exp: Ack::Ack,
-                                ack_check_en: true,
+                                ack_check_en: self.ack_check_en,
                                 length: 1,
                             },
                         )?;
@@ -1743,7 +1748,7 @@ impl Driver<'_> {
                             cmd_iterator,
                             Command::Write {
                                 ack_exp: Ack::Ack,
-                                ack_check_en: true,
+                                ack_check_en: self.ack_check_en,
                                 length: (write_len as u8) - 2,
                             },
                         )?;
@@ -1751,7 +1756,7 @@ impl Driver<'_> {
                             cmd_iterator,
                             Command::Write {
                                 ack_exp: Ack::Ack,
-                                ack_check_en: true,
+                                ack_check_en: self.ack_check_en,
                                 length: 1,
                             },
                         )?;
@@ -1759,7 +1764,7 @@ impl Driver<'_> {
                             cmd_iterator,
                             Command::Write {
                                 ack_exp: Ack::Ack,
-                                ack_check_en: true,
+                                ack_check_en: self.ack_check_en,
                                 length: 1,
                             },
                         )?;
@@ -1769,7 +1774,7 @@ impl Driver<'_> {
                         cmd_iterator,
                         Command::Write {
                             ack_exp: Ack::Ack,
-                            ack_check_en: true,
+                            ack_check_en: self.ack_check_en,
                             length: write_len as u8,
                         },
                     )?;
@@ -1831,7 +1836,7 @@ impl Driver<'_> {
                 cmd_iterator,
                 Command::Write {
                     ack_exp: Ack::Ack,
-                    ack_check_en: true,
+                    ack_check_en: self.ack_check_en,
                     length: 1,
                 },
             )?;
